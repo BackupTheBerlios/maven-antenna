@@ -17,7 +17,7 @@
             
     <subsection name="Manually">
 		<ul>
-        	<li>get newest version from <a href="http://wlab.ethz.ch/maven/repository/maven/plugins/">maven-antenna-plugin</a></li>
+        	<li>get newest version from <a href="http://osgirepo.berlios.de/maven/repository/maven/plugins/">maven-antenna-plugin</a></li>
       		<li>Copy the jar file into the maven plugins directory (e.g. maven-1.0/plugins, not the .maven/plugins).</li>
       	</ul>    
    		</subsection>
@@ -25,8 +25,8 @@
    	 	<subsection name="with Maven">
 <source><![CDATA[
 maven \
-	-Dmaven.repo.remote=http://wlab.ethz.ch/maven/repository \
-	-DgroupId=maven -DartifactId=maven-antenna-plugin -Dversion=0.9.12-SNAPSHOT \
+	-Dmaven.repo.remote=http://osgirepo.berlios.de/maven/repository \
+	-DgroupId=maven -DartifactId=maven-antenna-plugin -Dversion=1.0.0 \
 	plugin:download
 ]]></source>
     	</subsection>

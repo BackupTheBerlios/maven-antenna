@@ -34,14 +34,16 @@
 		</developer>
   	</developers>
   
-	<siteAddress>wlab.ethz.ch</siteAddress>
-  	<siteDirectory>/usr/local/apache/html/plugins/maven-antenna</siteDirectory>
-	<distributionDirectory>/usr/local/apache/html/maven/repository</distributionDirectory>
-	
+      <siteAddress>shell.berlios.de</siteAddress>
+      <siteDirectory>
+        /home/groups/maven-antenna/htdocs
+      </siteDirectory>
+      
   	<repository>
-    	<connection>
+<!--    	<connection>
       		scm:cvs:ext:iksgst3@iks2.inf.ethz.ch:/afs/ethz.ch/inf/proj/wlab/cvsmaster:maven-antenna-plugin
     	</connection>
+-->
   	</repository>
   
   	<build>
