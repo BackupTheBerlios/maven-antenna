@@ -272,6 +272,19 @@
     
   	  <echo>Now Packaging collected bundles to a MIDlet-suite</echo>     
  	  <attainGoal name="antenna:WtkPackage"/>
+ 	  
+ 	  <!-- copy jar, jad into local repository -->
+ 	  <ant:mkdir dir="${maven.repo.local}/${pom.getGroupId()}" />
+ 	  <ant:mkdir dir="${maven.repo.local}/${pom.getGroupId()}/jads" />
+	  <ant:mkdir dir="${maven.repo.local}/${pom.getGroupId()}/jads/${pom.currentVersion}" />
+	  
+		<!-- copy zip -->
+		<ant:copy 
+			file="${maven.build.dir}/${pom.artifactId}.jar"
+			tofile="${maven.repo.local}/${pom.getGroupId()}/jads/${pom.currentVersion}/${pom.artifactId}.jar" />
+		<ant:copy 
+			file="${maven.build.dir}/${pom.artifactId}.jad"
+			tofile="${maven.repo.local}/${pom.getGroupId()}/jads/${pom.currentVersion}/${pom.artifactId}.jad" />
   </goal>
 	
 
