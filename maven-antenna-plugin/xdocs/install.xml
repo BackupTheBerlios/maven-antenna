@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!-- 
+/* This is the main documentation of the Maven-Antenna Plugin
+ * Rene Mueller, July 19th 2004 
+ */
+ -->
+
+<document>
+
+  <properties>
+    <title>Maven-Antenna Plugin</title>
+    <author email="muellren_at_student.ethz.ch">René Müller</author>
+  </properties>
+
+	<body>
+	<section name="Installation of Maven-antenna Plugin">
+            
+    <subsection name="Manually">
+		<ul>
+        	<li>get newest version from <a href="http://wlab.ethz.ch/maven/repository/maven/plugins/">maven-antenna-plugin</a></li>
+      		<li>Copy the jar file into the maven plugins directory (e.g. maven-1.0/plugins, not the .maven/plugins).</li>
+      	</ul>    
+   		</subsection>
+    
+   	 	<subsection name="with Maven">
+<source><![CDATA[
+maven \
+	-Dmaven.repo.remote=http://wlab.ethz.ch/maven/repository \
+	-DgroupId=maven -DartifactId=maven-antenna-plugin -Dversion=0.9.12-SNAPSHOT \
+	plugin:download
+]]></source>
+    	</subsection>
+    
+    </section>
+	</body>
+</document>

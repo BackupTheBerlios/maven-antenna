@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+
+	<properties>
+   	<title>Maven-Antenna Goals</title>
+    	<author email="frei@inf.ethz.ch">Andreas Frei</author>
+  	</properties>
+
+	<body>
+ 	<section name="Goals">
+    
+		<table>        
+      	<tr><th>Goal</th><th>Properties</th><th>Description</th></tr>
+        
+        	<tr>
+         	<td>antenna</td>
+          		<td></td>
+          <td>
+            builds JAD and JAR file
+          </td>
+        </tr>
+        
+        <tr>
+          <td>antenna:init</td>
+          <td></td>
+          <td>
+            sets anntenna properties before executing any other goal
+          </td>
+        </tr>
+      
+        <tr>
+          <td>antenna:WtkBuild</td>
+          <td></td>
+          <td>
+            compiles sources to <code>${basedir}/target</code>
+          </td>
+        </tr>  
+        
+        <tr>
+          <td>antenna:WtkJad</td>
+          <td></td>
+          <td>
+            creates JAD file <code>${artifactId}.jad</code> in <code>${basedir}/target</code>
+            using the description from <code>midlets.xml</code>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>antenna:WtkPackage</td>
+          <td>-Dmaven.antenna.obfuscate, -Dmaven.antenna.preverify</td>
+          <td>
+            creates JAD file as <code>antenna:WtkJad</code> and JAR file 
+            <code>${maven.final.name}.jar</code> in <code>${basedir}/target</code>
+            directory. 
+          </td>
+        </tr>  
+        <tr>
+          <td>antenna:WtkRun</td>
+          <td>-Dmaven.antenna.simulator.device -Dmaven.antenna.simulator.heapsize
+              -Dmaven.antenna.simulator.trace</td>
+          <td>
+            starts the MIDlet suite in the emulator. Use device property to set 
+            the skin of the emulator device. 
+          </td>
+        </tr>
+              
+      </table>
+      
+    </section>
+    
+    <section name="Description">
+    
+    	<h3>antenna:WtkBuild</h3>
+		<p>
+		</p>
+				
+		<h3>antenna:WtkJad</h3>
+    	<p>
+
+    	</p>
+
+		<h3>antenna:WtkPackage</h3>
+    	<p>
+
+    	</p>
+
+		<h3>antenna:WtkRun</h3>
+    	<p>
+
+    	</p>
+    
+    	<subsection name="Properties">
+    		
+    		  <table>        
+        		<tr>
+        			<th>Parameters</th>
+        			<th>Optional/Default</th>
+        			<th>Description</th>
+        		</tr>
+        		
+        		<tr>
+        			<td>-Dmaven.antenna.preverify</td>
+        			<td>yes/true</td>
+        			<td>Setting this property starts the 
+        			    preverification process at the end of 
+        			    the packaging.</td>
+        		</tr>
+        		<tr>
+          			<td>-Dmaven.antenna.obfuscate</td>
+			        <td>yes/false</td>
+			        <td>
+						Setting this property the compiled classes
+						will be processed by the Proguard obfuscator.
+						This resulting JAD archive has a smaller 
+						footprint size and is less readable (reverse
+						engineering). 
+			        </td>
+			    </tr>
+    	      </table> 
+    	</subsection>    	
+    </section>
+    
+ </body>
+</document>

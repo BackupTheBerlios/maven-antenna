@@ -1,0 +1,271 @@
+<project
+	xmlns:maven="jelly:maven"
+	xmlns:jar="jelly:jar"
+	xmlns:j="jelly:core" 
+	xmlns:util="jelly:util" 
+	xmlns:ant="jelly:ant"
+	xmlns:x="jelly:xml"
+	xmlns:artifact="artifact"
+	xmlns:define="jelly:define">
+
+  	<!--==================================================================-->
+  	<!-- Default goal : Builds JAD and JAR file                           -->
+  	<!--==================================================================-->
+  	<goal name="antenna" prereqs="antenna:WtkPackage"
+  			description="builds JAD and JAR file"/>
+
+
+	<!--==================================================================-->
+  	<!-- Goal: set antenna properties                                     -->
+  	<!--==================================================================-->     
+   <goal description="set anntenna properties" name="antenna:init" 
+         prereqs="java:prepare-filesystem">
+      <!-- Classes with the wrapped goals -->
+   	<ant:taskdef classname="de.pleumann.antenna.WtkBuild" name="wtkbuild"/>
+      <ant:taskdef classname="de.pleumann.antenna.WtkJad" name="wtkjad"/>
+      <ant:taskdef classname="de.pleumann.antenna.WtkPackage" name="wtkpackage"/>
+      <ant:taskdef classname="de.pleumann.antenna.WtkRun" name="wtkrun"/>
+      
+      <!-- set the location of the directory of the Wireless Toolkit 
+           e.g. from the build.properties. -->
+      <property name="wtk.home" value="${antenna.wtk.home}"/>
+      
+      <!-- set the location of the groguard obfuscator -->
+      <property value="${maven.repo.local}/j2me/jars/proguard-2.1.jar" name="wtk.proguard.home"/>      
+   </goal>
+
+
+	<!--==================================================================-->
+  	<!-- Goal: compile sources                                            -->
+  	<!--==================================================================--> 
+   <goal description="compile sources" name="antenna:WtkBuild" prereqs="antenna:init">
+   
+   	<wtkbuild debug="${maven.compile.debug}" 
+   	          destdir="${maven.build.dest}" 
+   	          preverify="false">
+      	<classpath>
+         	<path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+         </classpath>
+         <src>
+         	<path refid="maven.compile.src.set"/>
+         </src>
+                        
+         <!-- only build modified sources -->
+         <j:forEach items="${pom.build.sourceModifications}" var="sm">
+         	<available classname="${sm.className}" property="classPresent"/>
+            <j:if test="${classPresent != 'true'}">
+            	<j:forEach items="${sm.excludes}" var="exclude">
+               	<exclude name="${exclude}"/>
+               </j:forEach>
+               <j:forEach items="${sm.includes}" var="include">
+               	<include name="${include}"/>
+               </j:forEach>
+            </j:if>
+        </j:forEach>
+      </wtkbuild>
+   </goal>
+
+
+	<!--==================================================================-->
+  	<!-- Goal: create Java Application Descriptor (JAD file)              -->
+  	<!--==================================================================--> 
+	<goal description="create jad file" name="antenna:WtkJad" prereqs="antenna:init">
+   	<j:set value="${maven.antenna.jad.update}" var="update"/>
+      	<j:if test="${empty (maven.j2me.jad.update)}">
+      		<!-- we need full build -->
+            <j:set value="false" var="update"/>
+        </j:if>
+        
+        <j:set value="${maven.antenna.midlets.file}" var="srcfile"/>
+        <j:if test="${empty (srcfile)}">
+            <j:set value="${basedir}/midlets.xml" var="srcfile"/>
+        </j:if>        
+        <util:file name="${srcfile}" var="srcfileFile"/>        
+        
+        <j:new className="org.dom4j.io.SAXReader" var="parser"/>
+        <x:parse SAXReader="${parser}" var="midlets" xml="${srcfileFile}"/>
+        <!-- setting up the default namespaces -->
+        <j:set value="${midlets.getRootElement()}" var="root"/>
+
+        <j:set value="http://wlab.ethz.ch/maven/plugins/maven-antenna-plugin" var="uri"/>
+        <j:if test="${root.getNamespaceURI().equals(uri)}">
+            <j:new className="java.util.HashMap" var="namespace"/>
+            <j:set value="http://wlab.ethz.ch/maven/plugins/maven-antenna-plugin" var="name"/>
+            <j:expr value="${namespace.put('j', name)}"/>
+            <j:set value="${root.createXPath('/j:descriptor/j:midlets/j:midlet')}" var="xPathMIDlets"/>
+            <j:set value="${root.createXPath('/j:descriptor/j:attributes/j:attribute')}" var="xPathAttributes"/>
+            <j:set value="${root.createXPath('/j:descriptor/j:suite')}" var="xPathSuite"/>
+            <j:set value="${root.createXPath('/j:descriptor/j:vendor')}" var="xPathVendor"/>
+            <j:set value="${root.createXPath('/j:descriptor/j:version')}" var="xPathVersion"/>                       
+            <j:expr value="${xPathMIDlets.setNamespaceURIs(namespace)}"/>            
+            <j:expr value="${xPathAttributes.setNamespaceURIs(namespace)}"/>
+            <j:expr value="${xPathSuite.setNamespaceURIs(namespace)}"/>
+            <j:expr value="${xPathVendor.setNamespaceURIs(namespace)}"/>
+            <j:expr value="${xPathVersion.setNamespaceURIs(namespace)}"/>
+        </j:if>
+        
+        <!-- make sure that suite name was defined -->
+        <j:set value="${xPathSuite.evaluate(root).getText()}" var="suitename"/>
+        <j:if test="${empty (suitename)}">
+            <fail message="No suite name defined, use /descriptor/suite!"/>
+        </j:if>
+        
+        <!-- verify vendor name (if not set use organisation name from POM) -->
+        <j:set value="${xPathVendor.evaluate(root).getText()}" var="vendor"/>
+        <j:if test="${empty (vendor)}">
+        		<!-- no vendor specified, try the one specified in the POM -->
+            <j:set value="${pom.organization.name}" var="vendor"/>
+        </j:if>
+        
+        <!-- verify version, if none is set use the POM version -->
+        <j:set value="${xPathVersion.evaluate(root).getText()}" var="version"/>
+        <j:if test="${empty (version)}">
+            <j:set value="${pom.currentVersion}" var="version"/>
+        </j:if>
+        
+        <ant:echo message="Building JAD..."/>
+        <ant:echo message="Suite:   ${suitename}" />
+        <ant:echo message="Vendor:  ${vendor}" />
+        <ant:echo message="Version: ${version}" />                                                
+        
+        <!-- execute the task -->
+		<!-- we are no longer using 
+        	   jarfile="${maven.build.dir}/${maven.final.name}.jar"
+        	since the Nokia 6600 does not seem to be able to cope with different 
+	        jad and jar names.
+	        Note this must also be changed when generating the JAR (see line 209) -->
+        <wtkjad autoversion="{maven.j2me.jad.autoversion}" 
+                 jadfile="${maven.build.dir}/${pom.artifactId}.jad"
+             	 jarfile="${maven.build.dir}/${pom.artifactId}.jar" 
+            	 name="${suitename}"
+            	 update="update" 
+            	 vendor="${vendor}" 
+            	 version="${version}">
+            	 
+            <!-- now add each MIDlet from midlets -->	 
+            <j:forEach items="${xPathMIDlets.selectNodes(root)}" var="midlet">
+					<!-- the name attribute must always be set, thus we check that -->             	
+               <x:set select="$midlet/@name" var="name"/>
+               <j:if test="${empty (name)}">
+               	<fail message="Name attribute must be set in /descriptor/midlets/midlet element!"/>
+               </j:if>            
+               
+               <!-- the class attribute must always be set, thus we check that -->
+               <x:set select="$midlet/@class" var="class"/>
+               <j:if test="${empty (class)}">
+               	<fail message="Class attribute must be set in /descriptor/midlets/midlet element!"/>
+               </j:if>
+            	
+            	<!-- icon attribute does not need to be set -->   
+               <x:set select="$midlet/@icon" var="icon"/>
+               
+               <!-- finally we add it -->
+               <midlet class="${class[0].value}" icon="${icon[0].value}" name="${name[0].value}"/>
+            </j:forEach>
+            
+            <!-- now we can add some optional attributes to JAD file if there any -->
+            <j:forEach items="${xPathAttributes.selectNodes(root)}" var="attribute">
+                <x:set select="$attribute/@name" var="name"/>
+                <j:if test="${empty (name)}">
+                    <fail message="Name attribute must be set in /descriptor/attibutes/attribute element!"/>
+                </j:if>
+                <x:set select="$attribute/@value" var="value"/>                
+                <attribute name="${name[0].value}" value="${value[0].value}"/>
+      	</j:forEach>
+   	</wtkjad>
+	</goal>
+    
+    
+	<!--==================================================================-->
+   <!-- Goal: package project (create JAR file)                          -->
+  	<!--==================================================================--> 
+    <goal description="package project files" name="antenna:WtkPackage" 
+          prereqs="antenna:WtkBuild, antenna:WtkJad, java:jar-resources">
+    	<path id="libclasspath">
+      	<j:forEach items="${pom.dependencies}" var="dep">
+         	<j:if test="${dep.getProperty('dependencyType').equalsIgnoreCase('runtime')}">
+            	<pathelement location="${pom.getDependencyPath(dep.getId())}"/>
+              	<j:set value="${classpath}:${pom.getDependencyPath(dep.getId())}" var="classpath"/>
+            </j:if>
+       	</j:forEach>
+       </path>
+       
+    	 <j:set value="${maven.antenna.preverify}" var="preverify"/>
+       <j:if test="${empty (preverify)}">
+      	 <j:set value="true" var="preferify"/>
+       </j:if>
+		 <j:set value="${maven.antenna.obfuscate}" var="obfuscate"/>
+       <j:if test="${empty (obfuscate)}">
+      	 <j:set value="false" var="obfuscate"/>
+       </j:if>
+
+	   <!-- now start package process -->  
+	   <!-- we are no longer using 
+        	   jarfile="${maven.build.dir}/${maven.final.name}.jar"
+        	since the Nokia 6600 does not seem to be able to cope with different 
+	        jad and jar names.
+	        Note this must also be changed when generating the JAD (see line 135) -->
+       <wtkpackage autoversion="false" 
+       		basedir="${maven.build.dest}" 
+       		classpath="${classpath}"
+       		config="${maven.antenna.midlet.configuration}" 
+           	jadfile="${maven.build.dir}/${pom.artifactId}.jad"
+            jarfile="${maven.build.dir}/${pom.artifactId}.jar" 
+            obfuscate="${maven.antenna.obfuscate}" 
+            preverify="${maven.antenna.preverify}" 
+            profile="${maven.antenna.midlet.profile}"/>
+   </goal>
+
+
+	<!--==================================================================-->
+   <!-- Goal: collect all OSGi bundles and glue them into MIDlet-suite   -->
+  	<!--==================================================================-->
+  	<goal description="collect all OSGi bundles and glue them into MIDlet-suite" 
+  	      name="antenna:OSGiBundle">
+     <echo>Putting together OSGi bundles...</echo>
+     
+     <j:forEach var="dep" items="${pom.dependencies}">
+         <j:set var="bundlepath" value="${pom.getDependencyPath(dep.getId())}"/>         
+         <j:set var="forMidlet"  value="${dep.getProperty('midlet')}"/>
+         <j:if test="${forMidlet == 'true'}">
+				<echo>${bundlepath} has will be added to ${maven.build.dest}</echo>
+				<ant:unjar src="${bundlepath}" dest="${maven.build.dest}" />
+			</j:if>
+     </j:forEach>
+     
+     <!-- delete remaining META-INF directory from the unpacking of the jars above -->
+     <ant:delete dir="${maven.build.dest}/META-INF" quiet="true" />
+    
+  	  <echo>Now Packaging collected bundles to a MIDlet-suite</echo>     
+ 	  <attainGoal name="antenna:WtkPackage"/>
+  </goal>
+	
+
+	<!--==================================================================-->
+   <!-- Goal: run MIDlets from JAD descriptor in emulator                -->
+  	<!--==================================================================--> 
+   <goal description="run MIDlets from JAD in emulator" 
+         name="antenna:WtkRun" prereqs="antenna:WtkPackage">
+		<j:set value="${maven.antenna.simulator.device}" var="device"/>
+      <j:if test="${empty (device)}">
+      	<j:set value="DefaultColorPhone" var="device"/>
+      </j:if>
+      <j:set value="${maven.j2me.run.debug}" var="debug"/>
+      <j:set value="${maven.j2me.run.heapsize}" var="heapsize"/>
+      <j:choose>
+      	<j:when test="${empty(heapsize)}">
+         	<wtkrun device="${device}" jadfile="${maven.build.dir}/${pom.artifactId}.jad"
+                    trace="${maven.antenna.simulator.trace}" wait="true"/>
+         </j:when>
+         <j:when test="${not empty (heapsize)}">
+         	<wtkrun device="${device}" 
+                    heapsize="${heapsize}" 
+                    jadfile="${maven.build.dir}/${pom.artifactId}.jad"
+                    trace="${maven.antenna.simulator.trace}" wait="true"/>
+         </j:when>
+      </j:choose>
+   </goal>
+
+    
+</project>

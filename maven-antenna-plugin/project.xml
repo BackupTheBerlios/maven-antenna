@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+
+	<pomVersion>3</pomVersion>
+  
+  	<groupId>maven</groupId>
+  	<id>maven-antenna-plugin</id>
+  	<currentVersion>1.0.0-SNAPSHOT</currentVersion>
+  
+  	<name>Maven Antenna Plugin</name>
+  
+  	<organization>
+   	<name>ETHZ-IKS</name>
+    	<url>http://www.iks.inf.ethz.ch</url>
+    	<logo>/images/logo_ethz_iks.jpg</logo>
+  	</organization>
+  
+  	<logo>/images/antenna_logo.jpg</logo>
+  
+  	<inceptionYear>2004</inceptionYear>
+  	<shortDescription>A Maven wrapper around Antenna (J2ME build tool)</shortDescription>
+
+  	<developers>
+   	<developer>
+      	<name>René Müller</name>
+      	<id>muellerr</id>
+      	<email>muellren_at_student.ethz.ch</email>
+      	<organization>ETHZ-IKS</organization>      	
+      	<roles>
+         	<role>Initial Developer</role>
+         </roles>
+         <url>http://www.cs.fh-aargau.ch/~muellerr</url>
+         <timezone>+1</timezone>
+		</developer>
+  	</developers>
+  
+	<siteAddress>wlab.ethz.ch</siteAddress>
+  	<siteDirectory>/usr/local/apache/html/plugins/maven-antenna</siteDirectory>
+	<distributionDirectory>/usr/local/apache/html/maven/repository</distributionDirectory>
+	
+  	<repository>
+    	<connection>
+      		scm:cvs:ext:iksgst3@iks2.inf.ethz.ch:/afs/ethz.ch/inf/proj/wlab/cvsmaster:maven-antenna-plugin
+    	</connection>
+  	</repository>
+  
+  	<build>
+		<sourceDirectory>${basedir}/src/main</sourceDirectory>
+		
+    	<resources>
+      	<resource>
+        		<directory></directory>
+        		<includes>
+          		<include>plugin.jelly</include>
+          		<include>plugin.properties</include>
+          		<include>project.properties</include>
+          		<include>project.xml</include>
+        		</includes>
+      	</resource>
+    	</resources>
+  	</build>
+  
+	<dependencies>
+		<dependency>
+      	<groupId>j2me</groupId>
+         <artifactId>antenna</artifactId>
+         <version>0.9.12</version>
+         <url>http://antenna.sourceforge.net</url>
+         <properties>
+         	<classloader>root</classloader>
+         </properties>
+      </dependency>
+    
+    	<dependency>
+      	<groupId>j2me</groupId>
+         <artifactId>proguard</artifactId>
+         <version>2.1</version>
+         <url>http://proguard.sourceforge.net</url>
+      </dependency>
+		
+		<dependency>
+			<groupId>maven</groupId>
+			<artifactId>maven</artifactId>
+			<version>1.0-rc4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-jelly</groupId>
+			<artifactId>commons-jelly-tags-xml</artifactId>
+			<version>20040613.030723</version>
+		</dependency>
+		
+		
+	</dependencies>
+
+
+	<reports>
+  		<report>maven-changes-plugin</report>
+  		<report>maven-javadoc-plugin</report>
+  		<report>maven-tasklist-plugin</report>
+  	</reports>
+
+</project>
+

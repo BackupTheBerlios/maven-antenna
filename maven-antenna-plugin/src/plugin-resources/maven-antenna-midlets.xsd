@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://wlab.ethz.ch/maven/plugins/maven-antenna-plugin" 
+           xmlns="http://wlab.ethz.ch/maven/plugins/maven-antenna-plugin" 
+           elementFormDefault="qualified">
+           
+	<xs:element name="descriptor">
+   	<xs:complexType>
+      	<xs:sequence>
+      		<xs:element maxOccurs="1" minOccurs="1" name="suite"  type="xs:string"/>
+      	   <xs:element maxOccurs="1" minOccurs="0" name="vendor" type="xs:string"/>
+      	   <xs:element maxOccurs="1" minOccurs="0" name="version" type="xs:string"/>      	   
+         	<xs:element maxOccurs="1" minOccurs="1" name="midlets" type="midletsType"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="attributes" type="attributesType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="midletsType">
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="1" name="midlet" type="midletType"/>
+            </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="attributesType">
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="1" name="attribute" type="attributeType"/>
+            </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="midletType">
+        <xs:attribute name="class" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="attributeType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
+    </xs:complexType>
+</xs:schema>

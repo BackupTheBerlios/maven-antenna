@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+
+  <properties>
+    <title>Maven-Antenna Properties</title>
+    <author email="muellren_at_student.ethz.ch">René Müller</author>
+  </properties>
+maven.antenna.midlet.configuration = CLDC-1.0
+maven.antenna.midlet.profile = MIDP-2.0
+maven.antenna.preverify = true
+maven.antenna.obfuscate = true
+
+  <body>
+    <section name="Maven-Antenna Properties">
+      <table>
+        <tr>
+          <th>Property name</th>
+          <th>Optional?</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>maven.antenna.midlet.configuration</td>
+          <td>Yes</td>
+          <td>
+            Sets the configuration in the <code>MANIFEST.MF</code>. Use
+            either <code>CLDC-1.0</code> or <code>CLDC-1.1</code>
+            (default: none, i.e. CLDC version is not set explicitely in 
+             <code>MANIFEST.MF</code> of the JAR).
+            <i>Warning: If this property is not set correctly the MIDlet
+               will not work on the mobile devices!</i>
+          </td>
+        </tr>
+        <tr>
+          <td>maven.antenna.midlet.profile</td>
+          <td>Yes</td>
+          <td>
+            Sets the MIDP profile version in the <code>MANIFEST.MF</code>.
+            Use either <code>MIDP-1.0</code> or <code>MIDP-2.0</code>
+            (default none, i.e. MIDP version is not set explicitely in
+             <code>MANIFEST.MF</code> of the JAR).
+            <i>Warning: If this property is not set correctly the MIDlet
+               will not work on the mobile devices!</i>
+          </td>
+        </tr>
+        <tr>
+          <td>maven.antenna.preverify</td>
+          <td>Yes</td>
+          <td>
+          	If set to <code>true</code> the compiled classes will 
+          	be processed by the Preverifier. (default: <code>true</code>)
+          	<i>Warning: Non-preverified classes cannot be run on 
+          	   mobile devices!></i>
+          </td>
+        </tr>    
+        <tr>
+          <td>maven.antenna.obfuscate</td>
+          <td>Yes</td>
+          <td>
+            If set to <code>true</code> the Proguard obfuscator
+            will process the compiled class files. This will reduce
+            the footprint size of the JAR archive and make 
+            revers-engineering, i.e. decompiling of the class files 
+            more difficult. (default: <code>false</code>)
+          </td>
+        </tr>
+        <tr>
+          <td>antenna.wtk.home</td>
+          <td>No</td>
+          <td>
+            Path to the location of the <i>Wireless Toolkit</i> home 
+            directory. This tool is used by Antenna when starting
+            the device emulator, thus its location must be specified
+            if the simulator should be lauchned as a maven goal. 
+          </td>
+        </tr>
+        <tr>
+          <td>maven.antenna.simulator.device</td>
+          <td>No</td>
+          <td>
+            Device that should be used when running the emulator.
+            If none is selected the <code>DefaultColorPhone</code> 
+            device will be used.
+          </td>
+        </tr>
+        <tr>
+          <td>maven.antenna.simulator.heapsize</td>
+          <td>No</td>
+          <td>
+             Determines the heap space available to the MIDlet suite. 
+             May be something like "65536", "128K" or "1M". Defaults to the latter.
+          </td>
+        </tr>
+        <tr>
+          <td>maven.antenna.simulator.trace</td>
+          <td>No</td>
+          <td>
+              Specifies whether the emulator should display verbose information on 
+              the MIDlet in execution. This is basically a comma-separated list of 
+              items whose possible values seem to depend on the WTK version 
+              (default: none).
+              Options for WTK2.1 are:
+              <ul>
+              		<li><code>allocation</code></li>
+              		<li><code>gc</code></li>
+              		<li><code>class</code></li>
+              		<li><code>verifier</code></li>
+              		<li><code>stackmaps</code></li>
+              		<li><code>bytecodes</code></li>
+              		<li><code>calls</code></li>
+              		<li><code>frames</code></li>
+              		<li><code>exceptions</code></li>
+              		<li><code>events</code></li>
+              		<li><code>threading</code></li>              		              		
+              		<li><code>monitors</code></li>
+              		<li><code>networking</code></li>
+              		<li><code>all</code> - all of the above</li>
+              </ul>
+          </td>
+        </tr>
+        
+        
+        
+                                        
+      </table>
+    </section>
+  </body>
+</document>

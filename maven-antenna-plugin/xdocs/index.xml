@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!-- 
+/* This is the main documentation of the Maven-Antenna Plugin
+ * Rene Mueller, July 19th 2004 
+ */
+ -->
+
+<document>
+
+  <properties>
+    <title>Maven-Antenna Plugin</title>
+    <author email="muellren_at_student.ethz.ch">René Müller</author>
+  </properties>
+
+	<body>
+  	<section name="Maven-Antenna Plugin">
+		<p>
+			This Maven plugin is a wrapper around Jörg Pleumans' 
+			 <a href="http://antenna.sourceforge.net">Antenna</a> Ant plugin. 
+			 With this plugin JADs and JARs for J2ME applications 
+			 can be automatically build within Maven.
+		</p>
+
+		<p>
+			Please write an <a href="mailto:muellren_at_student.ethz.ch">email</a> if 
+			you find errors or are missing some important properties.
+		</p>
+		</section>
+
+		<section name="Example">
+		<p>
+			The MIDlets are configured in an additional xml file <code>midlets.xml</code> that is located
+			in <code>${basedir}</code>, i.e. the same directory where <code>maven.xml</code>
+			and <code>project.xml</code> reside. Additional properties can be 
+			specified in the <code>project.properties</code> or 
+			<code>build.properties</code> respectively. The follwing example 
+			describes how to setup the <code>midlets.xml</code> and the Antenna-properties. 
+		</p>
+		
+		<p>
+			The MIDlet suite and its MIDlets are listed in <code>midlets.xml</code>:
+<source><![CDATA[<descriptor xmlns="http://wlab.ethz.ch/maven/plugins/maven-antenna-plugin">
+
+ 	<suite>IKSGames</suite>
+ 	<vendor>IKS Group, ETH Zurich</vendor> 
+  	<version>1.0.0</version> 
+  	<midlets>
+  		<midlet class="ch.ethz.iks.j2me.games.nmm.NineMensMorris" 
+  		        name="NineMensMorris"/>  		
+  		<midlet class="ch.ethz.iks.j2me.games.ships.BattleShips" 
+  		        name="BattleShips"/>
+  		<midlet class="ch.ethz.iks.j2me.games.ttt.TicTacToe" 
+  		        name="TicTacToe"/>        
+  	</midlets>
+  	
+  	<attributes>
+  		<attribute name="SERVERURL" value="http://wlab.ethz.ch/games/GameServer.jsp"/>
+  		<attribute name="USER"      value="Rene"/>  		
+  	</attributes>
+</descriptor>]]></source>
+		</p>
+		
+		<p>
+			The following properties are set in the <code>project.properties</code> as the 
+			determine how the MIDlets are built.
+<source>#--------------------------------------------------------------------
+# J2ME settings for IKS Games
+#--------------------------------------------------------------------
+maven.antenna.midlet.configuration = CLDC-1.0
+maven.antenna.midlet.profile = MIDP-2.0
+maven.antenna.preverify = true
+maven.antenna.obfuscate = true</source>			
+		</p>
+		
+		<p>
+		  Calling maven with the goal <code>antenna:WtkPackage</code> creates
+		  the JAR and JAD in the <code>${basdir}/target</code> directory. 
+		</p>
+		
+		<p> 
+		  With the settings above following JAD file is generated:
+<source>MIDlet-Jar-URL: jxme-btchat-0.1.0.jar
+MIDlet-Jar-Size: 21983
+MIDlet-Name: IKSGames
+MIDlet-Vendor: IKS Group, ETH Zurich
+MIDlet-Version: 1.0.0
+MIDlet-1: NineMensMorris, , ch.ethz.iks.j2me.games.nmm.NineMensMorris
+MIDlet-2: BattleShips, , ch.ethz.iks.j2me.games.ships.BattleShips
+MIDlet-3: TicTacToe, , ch.ethz.iks.j2me.games.ttt.TicTacToe
+SERVERURL: http://wlab.ethz.ch/games/GameServer.jsp
+USER: Rene</source></p>
+
+	</section>
+	</body>
+</document>
