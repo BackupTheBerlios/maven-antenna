@@ -5,7 +5,7 @@
   
   	<groupId>maven</groupId>
   	<id>maven-antenna-plugin</id>
-  	<currentVersion>1.0.0-SNAPSHOT</currentVersion>
+  	<currentVersion>1.0.1-SNAPSHOT</currentVersion>
   
   	<name>Maven Antenna Plugin</name>
   
