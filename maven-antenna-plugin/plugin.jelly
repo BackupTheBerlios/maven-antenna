@@ -1,4 +1,4 @@
-<project
+ <project
 	xmlns:maven="jelly:maven"
 	xmlns:jar="jelly:jar"
 	xmlns:j="jelly:core" 
@@ -32,52 +32,37 @@
       <property name="wtk.home" value="${antenna.wtk.home}"/>
             
       <!-- set the location of the groguard obfuscator -->
-      <property value="${maven.repo.local}/j2me/jars/proguard-2.1.jar" name="wtk.proguard.home"/>      
-   </goal>
-
-
-	<!--==================================================================-->
-  	<!-- Goal: compile sources                                            -->
-  	<!--==================================================================--> 
-   <goal description="compile sources" name="antenna:WtkBuild" prereqs="antenna:init">
-   
-   	<wtkbuild debug="${maven.compile.debug}" 
-   	          destdir="${maven.build.dest}" 
-   	          preverify="false">
-      	<classpath>
-         	<path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-         </classpath>
-         <src>
-         	<path refid="maven.compile.src.set"/>
-         </src>
-                        
-         <!-- only build modified sources -->
-         <j:forEach items="${pom.build.sourceModifications}" var="sm">
-         	<available classname="${sm.className}" property="classPresent"/>
-            <j:if test="${classPresent != 'true'}">
-            	<j:forEach items="${sm.excludes}" var="exclude">
-               	<exclude name="${exclude}"/>
-               </j:forEach>
-               <j:forEach items="${sm.includes}" var="include">
-               	<include name="${include}"/>
-               </j:forEach>
-            </j:if>
-        </j:forEach>
-      </wtkbuild>
-   </goal>
-
-
-	<!--==================================================================-->
-  	<!-- Goal: create Java Application Descriptor (JAD file)              -->
-  	<!--==================================================================--> 
-	<goal description="create jad file" name="antenna:WtkJad" prereqs="antenna:init">
-   	<j:set value="${maven.antenna.jad.update}" var="update"/>
-      	<j:if test="${empty (maven.j2me.jad.update)}">
-      		<!-- we need full build -->
-            <j:set value="false" var="update"/>
-        </j:if>
-        
+      <property value="${maven.repo.local}/j2me/jars/proguard-2.1.jar" name="wtk.proguard.home"/>
+      
+      <!-- set wtk.cldc.version and wtk.midp.version properly from the 
+          substring after "CLDC-" and "MIDP-" respectively from the           
+          maven.antenna.midlet.configuration and the maven.antenna.midlet.profile property -->
+      <j:set value="${maven.antenna.midlet.profile}" var="profileversion"/>     
+      <j:if test="${empty (profileversion)}">
+      		<j:set value="MIDP-1.0" var="profileversion"/>
+	  </j:if>     
+	  <j:if test="${profileversion.equals('MIDP-1.0')}">
+	  	    <j:set value="1.0" var="profileversion" />  
+	  </j:if>
+	  <j:if test="${profileversion.equals('MIDP-2.0')}">
+	  	    <j:set value="2.0" var="profileversion" />  
+	  </j:if>
+	  <property name="wtk.midp.version" value="${profileversion}"/>          
+      
+      <j:set value="${maven.antenna.midlet.configuration}" var="configuration"/>     
+      <j:if test="${empty (configuration)}">
+      		<j:set value="CLDC-1.0" var="configuration"/>
+	  </j:if>     
+	  <j:if test="${configuration.equals('CLDC-1.0')}">
+	  	    <j:set value="1.0" var="configuration" />  
+	  </j:if>
+	  <j:if test="${configuration.equals('CLDC-1.1')}">
+	  	    <j:set value="1.1" var="configuration" />  
+	  </j:if>
+	  <property name="wtk.cldc.version" value="${configuration}"/>          
+	  
+           
+      <!-- now parse midlets.xml file -->
         <j:set value="${maven.antenna.midlets.file}" var="srcfile"/>
         <j:if test="${empty (srcfile)}">
             <j:set value="${basedir}/midlets.xml" var="srcfile"/>
@@ -125,11 +110,58 @@
             <j:set value="${pom.currentVersion}" var="version"/>
         </j:if>
         
-        <ant:echo message="Building JAD..."/>
+        <ant:echo message="MIDLet Suite:"/>
         <ant:echo message="Suite:   ${suitename}" />
         <ant:echo message="Vendor:  ${vendor}" />
-        <ant:echo message="Version: ${version}" />                                                
+        <ant:echo message="Version: ${version}" /> 
+        <ant:echo message="CLDC:    ${maven.antenna.midlet.configuration}" />
+        <ant:echo message="MIDP:    ${maven.antenna.midlet.profile} "/>
+   </goal>
+
+
+	<!--==================================================================-->
+  	<!-- Goal: compile sources                                            -->
+  	<!--==================================================================--> 
+   <goal description="compile sources" name="antenna:WtkBuild" prereqs="antenna:init">
+   
+   	<wtkbuild debug="${maven.compile.debug}" 
+   	          destdir="${maven.build.dest}" 
+   	          preverify="false">
+      	<classpath>
+         	<path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+         </classpath>
+         <src>
+         	<path refid="maven.compile.src.set"/>
+         </src>
+                        
+         <!-- only build modified sources -->
+         <j:forEach items="${pom.build.sourceModifications}" var="sm">
+         	<available classname="${sm.className}" property="classPresent"/>
+            <j:if test="${classPresent != 'true'}">
+            	<j:forEach items="${sm.excludes}" var="exclude">
+               	<exclude name="${exclude}"/>
+               </j:forEach>
+               <j:forEach items="${sm.includes}" var="include">
+               	<include name="${include}"/>
+               </j:forEach>
+            </j:if>
+        </j:forEach>
+      </wtkbuild>
+   </goal>
+
+
+	<!--==================================================================-->
+  	<!-- Goal: create Java Application Descriptor (JAD file)              -->
+  	<!--==================================================================--> 
+	<goal description="create jad file" name="antenna:WtkJad" prereqs="antenna:init">
+   	<j:set value="${maven.antenna.jad.update}" var="update"/>
+      	<j:if test="${empty (maven.j2me.jad.update)}">
+      		<!-- we need full build -->
+            <j:set value="false" var="update"/>
+        </j:if>
         
+		<ant:echo message="Building JAD..."/>
         <!-- execute the task -->
 		<!-- we are no longer using 
         	   jarfile="${maven.build.dir}/${maven.final.name}.jar"
@@ -177,8 +209,7 @@
    	</wtkjad>
 	</goal>
     
-    
-    
+        
 	<!--==================================================================-->
    <!-- Goal: package project (create JAR file)                          -->
   	<!--==================================================================--> 
@@ -212,11 +243,11 @@
        		basedir="${maven.build.dest}" 
        		classpath="${classpath}"
        		config="${maven.antenna.midlet.configuration}" 
+       		profile="${maven.antenna.midlet.profile}"
            	jadfile="${maven.build.dir}/${pom.artifactId}.jad"
             jarfile="${maven.build.dir}/${pom.artifactId}.jar" 
             obfuscate="${maven.antenna.obfuscate}" 
-            preverify="${maven.antenna.preverify}" 
-            profile="${maven.antenna.midlet.profile}"/>
+            preverify="${maven.antenna.preverify}"/>
    </goal>
 
 
