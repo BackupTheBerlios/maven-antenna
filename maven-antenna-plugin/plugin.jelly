@@ -20,6 +20,7 @@
   	<!--==================================================================-->     
    <goal description="set anntenna properties" name="antenna:init" 
          prereqs="java:prepare-filesystem">
+      
       <!-- Classes with the wrapped goals -->
    	<ant:taskdef classname="de.pleumann.antenna.WtkBuild" name="wtkbuild"/>
       <ant:taskdef classname="de.pleumann.antenna.WtkJad" name="wtkjad"/>
@@ -29,7 +30,7 @@
       <!-- set the location of the directory of the Wireless Toolkit 
            e.g. from the build.properties. -->
       <property name="wtk.home" value="${antenna.wtk.home}"/>
-      
+            
       <!-- set the location of the groguard obfuscator -->
       <property value="${maven.repo.local}/j2me/jars/proguard-2.1.jar" name="wtk.proguard.home"/>      
    </goal>
@@ -177,6 +178,7 @@
 	</goal>
     
     
+    
 	<!--==================================================================-->
    <!-- Goal: package project (create JAR file)                          -->
   	<!--==================================================================--> 
@@ -222,7 +224,7 @@
    <!-- Goal: collect all OSGi bundles and glue them into MIDlet-suite   -->
   	<!--==================================================================-->
   	<goal description="collect all OSGi bundles and glue them into MIDlet-suite" 
-  	      name="antenna:OSGiBundle">
+  	      name="antenna:OSGiBundle" prereqs="antenna:init,antenna:WtkBuild,antenna:WtkJad">
      <echo>Putting together OSGi bundles...</echo>
      
      <j:forEach var="dep" items="${pom.dependencies}">
