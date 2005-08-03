@@ -6,7 +6,7 @@
   	<body>
    	<links>
    		<item name="BerliOS"      	href="https://developer.berlios.de/projects/maven-antenna/"/>
-      	<item name="Jadabs"      	href="http://wlab.ethz.ch/jadabs"/>
+      	<item name="Jadabs"      	href="http://jadabs.berlios.de/"/>
       	<item name="Maven"      	href="http://maven.apache.org/"/>
       	<item name="Jelly"      	href="http://jakarta.apache.org/commons/jelly"/>
     	</links>

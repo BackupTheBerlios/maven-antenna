@@ -29,7 +29,7 @@
       	<roles>
          	<role>Initial Developer</role>
          </roles>
-         <url>http://www.cs.fh-aargau.ch/~muellerr</url>
+         <url></url>
          <timezone>+1</timezone>
 		</developer>
   	</developers>
@@ -101,12 +101,10 @@
 		
 	</dependencies>
 
-
 	<reports>
   		<report>maven-changes-plugin</report>
   		<report>maven-javadoc-plugin</report>
   		<report>maven-tasklist-plugin</report>
   	</reports>
-
 </project>
 
